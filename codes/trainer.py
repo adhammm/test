@@ -59,12 +59,12 @@ def preprocess_data(imgs_paths, label):
     im = im / 255.0
     return im, label
 
-def data_layer(data_tensor, num_threads=8, prefetch_buffer=100, batch_size=128):
+def data_layer(data_tensor, num_threads=4, prefetch_buffer=50, batch_size=32):
     with tf.variable_scope("data",reuse=tf.AUTO_REUSE):
 		# read the data from data tensors
         dataset = tf.data.Dataset.from_tensor_slices(data_tensor)
 		# shuffle the data with a buffer and repeat the data 2 times.
-        dataset = dataset.shuffle(buffer_size=800).repeat()
+        dataset = dataset.shuffle(buffer_size=200).repeat()
 		# dataset.map: Applies preprocess_data function to each element of this dataset,
         # and returns a new dataset containing the transformed elements, in the same order as they appeared in the input.
         dataset = dataset.map(preprocess_data, num_parallel_calls=num_threads)
@@ -121,8 +121,8 @@ def train(data_tensor):
     accuracy = performance_metric(logits, labels)
 
     # start training
-    num_iter = 1000
-    log_iter = 100
+    num_iter = 10000
+    log_iter = 1000
     with tf.Session() as sess:
 		# initialize all the variables
         sess.run(tf.global_variables_initializer())
